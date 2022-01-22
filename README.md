@@ -25,3 +25,11 @@ You can train a tokenizer from scratch on a given dataset, which should consist 
 ```
 python3 -m hugging_go train-tokenizer data/kgs_big.sgf
 ```
+
+### Model
+
+After training the tokenizer the main model can be trained using the same one-line SGF files. This will probably take a long time:
+
+```
+python3 -m hugging_go train-model data/kgs_big.sgf
+```
