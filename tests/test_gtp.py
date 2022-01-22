@@ -8,9 +8,13 @@ class FakeBoardFactory:
     def build(self, board_size, komi):
         return FakeBoard(size=board_size, komi=komi)
 
+class FakeAgent:
+    def play(self, board, color, vertex):
+        return True if vertex == 'd4' else False
+
 class TestGtp(unittest.TestCase):
     def setUp(self):
-        self.gtp = Gtp(board_factory=FakeBoardFactory())
+        self.gtp = Gtp(agent=FakeAgent(), board_factory=FakeBoardFactory())
 
     def test_empty(self):
         self.assertEqual(
@@ -118,6 +122,20 @@ class TestGtp(unittest.TestCase):
         self.assertEqual(
             self.gtp.process('komi -5.5'),
             '= \n\n'
+        )
+
+    def test_play(self):
+        self.assertEqual(
+            self.gtp.process('play'),
+            '? syntax error\n\n'
+        )
+        self.assertEqual(
+            self.gtp.process('play b d4'),
+            '= \n\n'
+        )
+        self.assertEqual(
+            self.gtp.process('play w d16'),
+            '? illegal move\n\n'
         )
 
 if __name__ == '__main__':
