@@ -23,5 +23,11 @@ class TestGtp(unittest.TestCase):
             '= 2\n\n'
         )
 
+    def test_name(self):
+        self.assertEqual(
+            self.gtp.process('name'),
+            '= hugging_go\n\n'
+        )
+
 if __name__ == '__main__':
     unittest.main()
