@@ -1,6 +1,7 @@
+from hugging_go.gtp import Gtp
+
 from collections import namedtuple
 import unittest
-from hugging_go.gtp import Gtp
 
 FakeBoard = namedtuple('Board', ['size', 'komi'])
 
