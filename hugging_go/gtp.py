@@ -109,7 +109,7 @@ class Gtp:
         return str(reply.with_id(id))
 
     def preprocess(self, line):
-        parts = re.split(r'\s+', line.lstrip())
+        parts = re.split(r'\s+', line.strip())
 
         if parts[0].isnumeric():
             return int(parts[0]), parts[1:]
