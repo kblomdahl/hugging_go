@@ -27,6 +27,10 @@ class UnacceptableSize(Error):
     def __init__(self):
         super(UnacceptableSize, self).__init__('unacceptable size')
 
+class IllegalMove(Error):
+    def __init__(self):
+        super(IllegalMove, self).__init__('illegal move')
+
 class Success:
     def __init__(self, message):
         self.message = message
@@ -47,11 +51,12 @@ class Gtp:
     [1] https://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html """
 
     KNOWN_COMMANDS = frozenset(
-        ('protocol_version', 'name', 'version', 'known_command', 'list_commands', 'quit', 'boardsize', 'clear_board', 'komi')
+        ('protocol_version', 'name', 'version', 'known_command', 'list_commands', 'quit', 'boardsize', 'clear_board', 'komi', 'play')
     )
 
-    def __init__(self, *, board_factory=None):
+    def __init__(self, *, agent=None, board_factory=None):
         self._is_running = True
+        self._agent = agent
         self._board_factory = board_factory
         self._board_size = 19
         self._komi = 5.5
@@ -94,6 +99,8 @@ class Gtp:
             reply = self.clear_board(tokens[1:])
         elif tokens[0] == 'komi':
             reply = self.komi(tokens[1:])
+        elif tokens[0] == 'play':
+            reply = self.play(tokens[1:])
         else:
             reply = UnknownCommand()
 
@@ -157,3 +164,37 @@ class Gtp:
             return Success('')
         except ValueError:
             return SyntaxError()
+
+    def play(self, line):
+        if len(line) != 2:
+            return SyntaxError()
+
+        try:
+            [color, vertex] = line
+            color = _normalize_color(color)
+            vertex = _normalize_vertex(vertex)
+
+            if self._agent.play(self._board, color, vertex):
+                return Success('')
+            else:
+                return IllegalMove()
+        except ValueError:
+            return SyntaxError()
+
+def _normalize_color(color):
+    color = color.lower()
+
+    if color == 'black' or color == 'b':
+        return 'b'
+    elif color == 'white' or color == 'w':
+        return 'w'
+    else:
+        raise ValueError()
+
+def _normalize_vertex(vertex):
+    vertex = vertex.lower()
+
+    if re.match(r'[a-z][0-9]+', vertex):
+        return vertex
+    else:
+        raise ValueError()
