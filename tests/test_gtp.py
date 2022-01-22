@@ -1,9 +1,13 @@
 import unittest
 from hugging_go.gtp import Gtp
 
+class FakeBoardFactory:
+    def build(self, board_size):
+        return None
+
 class TestGtp(unittest.TestCase):
     def setUp(self):
-        self.gtp = Gtp()
+        self.gtp = Gtp(board_factory=FakeBoardFactory())
 
     def test_empty(self):
         self.assertEqual(
@@ -78,6 +82,12 @@ class TestGtp(unittest.TestCase):
         )
         self.assertEqual(
             self.gtp.process('boardsize 19'),
+            '= \n\n'
+        )
+
+    def test_clear_board(self):
+        self.assertEqual(
+            self.gtp.process('clear_board'),
             '= \n\n'
         )
 
