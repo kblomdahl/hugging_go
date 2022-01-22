@@ -51,7 +51,7 @@ class Gtp:
     [1] https://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html """
 
     KNOWN_COMMANDS = frozenset(
-        ('protocol_version', 'name', 'version', 'known_command', 'list_commands', 'quit', 'boardsize', 'clear_board', 'komi', 'play')
+        ('protocol_version', 'name', 'version', 'known_command', 'list_commands', 'quit', 'boardsize', 'clear_board', 'komi', 'play', 'genmove')
     )
 
     def __init__(self, *, agent=None, board_factory=None):
@@ -101,6 +101,8 @@ class Gtp:
             reply = self.komi(tokens[1:])
         elif tokens[0] == 'play':
             reply = self.play(tokens[1:])
+        elif tokens[0] == 'genmove':
+            reply = self.genmove(tokens[1:])
         else:
             reply = UnknownCommand()
 
@@ -180,6 +182,19 @@ class Gtp:
                 return IllegalMove()
         except ValueError:
             return SyntaxError()
+
+    def genmove(self, line):
+        if len(line) != 1:
+            return SyntaxError()
+
+        try:
+            color = _normalize_color(line[0])
+            vertex = self._agent.genmove(self._board, color)
+
+            return Success(vertex)
+        except ValueError:
+            return SyntaxError()
+
 
 def _normalize_color(color):
     color = color.lower()
