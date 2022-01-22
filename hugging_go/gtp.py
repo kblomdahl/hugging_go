@@ -47,12 +47,19 @@ class Gtp:
     [1] https://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html """
 
     KNOWN_COMMANDS = frozenset(
-        ('protocol_version', 'name', 'version', 'known_command', 'list_commands', 'quit', 'boardsize')
+        ('protocol_version', 'name', 'version', 'known_command', 'list_commands', 'quit', 'boardsize', 'clear_board')
     )
 
-    def __init__(self):
+    def __init__(self, *, board_factory=None):
         self.is_running = True
+        self.board_factory = board_factory
         self.board_size = 19
+        self.setUp()
+
+    def setUp(self):
+        self.board = self.board_factory.build(
+            self.board_size
+        )
 
     def process(self, line):
         id, tokens = self.preprocess(line)
@@ -73,6 +80,8 @@ class Gtp:
             reply = self.quit(tokens[1:])
         elif tokens[0] == 'boardsize':
             reply = self.boardsize(tokens[1:])
+        elif tokens[0] == 'clear_board':
+            reply = self.clear_board(tokens[1:])
         else:
             reply = UnknownCommand()
 
@@ -122,3 +131,7 @@ class Gtp:
         else:
             self.board_size = size
             return Success('')
+
+    def clear_board(self, line):
+        self.setUp()
+        return Success('')
