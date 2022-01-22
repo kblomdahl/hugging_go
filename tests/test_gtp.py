@@ -12,6 +12,9 @@ class FakeAgent:
     def play(self, board, color, vertex):
         return True if vertex == 'd4' else False
 
+    def genmove(self, board, color):
+        return 'pass'
+
 class TestGtp(unittest.TestCase):
     def setUp(self):
         self.gtp = Gtp(agent=FakeAgent(), board_factory=FakeBoardFactory())
@@ -136,6 +139,16 @@ class TestGtp(unittest.TestCase):
         self.assertEqual(
             self.gtp.process('play w d16'),
             '? illegal move\n\n'
+        )
+
+    def test_genmove(self):
+        self.assertEqual(
+            self.gtp.process('genmove'),
+            '? syntax error\n\n'
+        )
+        self.assertEqual(
+            self.gtp.process('genmove w'),
+            '= pass\n\n'
         )
 
 if __name__ == '__main__':
