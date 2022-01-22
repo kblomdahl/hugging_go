@@ -62,5 +62,10 @@ class TestGtp(unittest.TestCase):
                 '= true\n\n'
             )
 
+    def test_quit(self):
+        self.assertEqual(self.gtp.is_running, True)
+        self.assertEqual(self.gtp.process('quit'), '= \n\n')
+        self.assertEqual(self.gtp.is_running, False)
+
 if __name__ == '__main__':
     unittest.main()
