@@ -67,5 +67,19 @@ class TestGtp(unittest.TestCase):
         self.assertEqual(self.gtp.process('quit'), '= \n\n')
         self.assertEqual(self.gtp.is_running, False)
 
+    def test_boardsize(self):
+        self.assertEqual(
+            self.gtp.process('boardsize'),
+            '? syntax error\n\n'
+        )
+        self.assertEqual(
+            self.gtp.process('boardsize 9'),
+            '? unacceptable size\n\n'
+        )
+        self.assertEqual(
+            self.gtp.process('boardsize 19'),
+            '= \n\n'
+        )
+
 if __name__ == '__main__':
     unittest.main()
