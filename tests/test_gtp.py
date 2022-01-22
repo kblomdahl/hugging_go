@@ -29,5 +29,11 @@ class TestGtp(unittest.TestCase):
             '= hugging_go\n\n'
         )
 
+    def test_version(self):
+        self.assertEqual(
+            self.gtp.process('version'),
+            '= 0\n\n'
+        )
+
 if __name__ == '__main__':
     unittest.main()

@@ -50,6 +50,8 @@ class Gtp:
             reply = self.protocol_version(tokens[1:])
         elif tokens[0] == 'name':
             reply = self.name(tokens[1:])
+        elif tokens[0] == 'version':
+            reply = self.version(tokens[1:])
         else:
             reply = UnknownCommand()
 
@@ -68,3 +70,6 @@ class Gtp:
 
     def name(self, line):
         return Success('hugging_go')
+
+    def version(self, line):
+        return Success('0')
