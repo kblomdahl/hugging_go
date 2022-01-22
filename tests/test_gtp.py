@@ -35,5 +35,19 @@ class TestGtp(unittest.TestCase):
             '= 0\n\n'
         )
 
+    def test_known_command(self):
+        self.assertEqual(
+            self.gtp.process('known_command'),
+            '? syntax error\n\n'
+        )
+        self.assertEqual(
+            self.gtp.process('known_command protocol_version'),
+            '= true\n\n'
+        )
+        self.assertEqual(
+            self.gtp.process('known_command this-command-does-not-exist'),
+            '= false\n\n'
+        )
+
 if __name__ == '__main__':
     unittest.main()
