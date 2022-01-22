@@ -151,5 +151,20 @@ class TestGtp(unittest.TestCase):
             '= pass\n\n'
         )
 
+    def test_required_commands(self):
+        commands = self.gtp.process('list_commands').lstrip('= ').split('\n')
+
+        self.assertIn('protocol_version', commands)
+        self.assertIn('name', commands)
+        self.assertIn('version', commands)
+        self.assertIn('known_command', commands)
+        self.assertIn('list_commands', commands)
+        self.assertIn('quit', commands)
+        self.assertIn('boardsize', commands)
+        self.assertIn('clear_board', commands)
+        self.assertIn('komi', commands)
+        self.assertIn('play', commands)
+        self.assertIn('genmove', commands)
+
 if __name__ == '__main__':
     unittest.main()
