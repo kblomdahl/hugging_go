@@ -49,5 +49,18 @@ class TestGtp(unittest.TestCase):
             '= false\n\n'
         )
 
+    def test_list_commands(self):
+        commands = self.gtp.process('list_commands')
+        self.assertNotEqual(commands, '? unknown command\n\n')
+
+        for command in commands.lstrip('= ').split('\n'):
+            if not command:
+                continue
+
+            self.assertEqual(
+                self.gtp.process(f'known_command {command}'),
+                '= true\n\n'
+            )
+
 if __name__ == '__main__':
     unittest.main()
