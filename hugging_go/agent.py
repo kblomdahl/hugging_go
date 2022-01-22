@@ -1,6 +1,10 @@
 class Agent:
     def play(self, board, color, vertex):
-        return True
+        if not board.is_valid(color, vertex):
+            return False
+        else:
+            board.place(color, vertex)
+            return True
 
     def genmove(self, board, color):
         return 'resign'
