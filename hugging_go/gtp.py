@@ -47,19 +47,29 @@ class Gtp:
     [1] https://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html """
 
     KNOWN_COMMANDS = frozenset(
-        ('protocol_version', 'name', 'version', 'known_command', 'list_commands', 'quit', 'boardsize', 'clear_board')
+        ('protocol_version', 'name', 'version', 'known_command', 'list_commands', 'quit', 'boardsize', 'clear_board', 'komi')
     )
 
     def __init__(self, *, board_factory=None):
-        self.is_running = True
-        self.board_factory = board_factory
-        self.board_size = 19
+        self._is_running = True
+        self._board_factory = board_factory
+        self._board_size = 19
+        self._komi = 5.5
         self.setUp()
 
     def setUp(self):
-        self.board = self.board_factory.build(
-            self.board_size
+        self._board = self._board_factory.build(
+            self._board_size,
+            self._komi
         )
+
+    @property
+    def is_running(self):
+        return self._is_running
+
+    @property
+    def board(self):
+        return self._board
 
     def process(self, line):
         id, tokens = self.preprocess(line)
@@ -82,6 +92,8 @@ class Gtp:
             reply = self.boardsize(tokens[1:])
         elif tokens[0] == 'clear_board':
             reply = self.clear_board(tokens[1:])
+        elif tokens[0] == 'komi':
+            reply = self.komi(tokens[1:])
         else:
             reply = UnknownCommand()
 
@@ -117,7 +129,7 @@ class Gtp:
         return Success('\n'.join(sorted(self.KNOWN_COMMANDS)))
 
     def quit(self, line):
-        self.is_running = False
+        self._is_running = False
 
         return Success('')
 
@@ -129,9 +141,19 @@ class Gtp:
         if size != 19:
             return UnacceptableSize()
         else:
-            self.board_size = size
+            self._board_size = size
             return Success('')
 
     def clear_board(self, line):
         self.setUp()
         return Success('')
+
+    def komi(self, line):
+        if not line:
+            return SyntaxError()
+
+        try:
+            self._komi = float(line[0])
+            return Success('')
+        except ValueError:
+            return SyntaxError()

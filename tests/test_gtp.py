@@ -1,9 +1,12 @@
+from collections import namedtuple
 import unittest
 from hugging_go.gtp import Gtp
 
+FakeBoard = namedtuple('Board', ['size', 'komi'])
+
 class FakeBoardFactory:
-    def build(self, board_size):
-        return None
+    def build(self, board_size, komi):
+        return FakeBoard(size=board_size, komi=komi)
 
 class TestGtp(unittest.TestCase):
     def setUp(self):
@@ -87,7 +90,33 @@ class TestGtp(unittest.TestCase):
 
     def test_clear_board(self):
         self.assertEqual(
+            self.gtp.process('boardsize 19'),
+            '= \n\n'
+        )
+        self.assertEqual(
+            self.gtp.process('komi 7.5'),
+            '= \n\n'
+        )
+        self.assertEqual(
             self.gtp.process('clear_board'),
+            '= \n\n'
+        )
+        self.assertEqual(
+            self.gtp.board,
+            FakeBoard(size=19, komi=7.5)
+        )
+
+    def test_komi(self):
+        self.assertEqual(
+            self.gtp.process('komi'),
+            '? syntax error\n\n'
+        )
+        self.assertEqual(
+            self.gtp.process('komi this-is-not-a-number'),
+            '? syntax error\n\n'
+        )
+        self.assertEqual(
+            self.gtp.process('komi -5.5'),
             '= \n\n'
         )
 
