@@ -1,3 +1,4 @@
+from hugging_go.vertex import Vertex
 from hugging_go.gtp import Gtp
 
 from collections import namedtuple
@@ -11,7 +12,7 @@ class FakeBoardFactory:
 
 class FakeAgent:
     def play(self, board, color, vertex):
-        return True if vertex == 'd4' else False
+        return True if vertex == Vertex('d4') else False
 
     def genmove(self, board, color):
         return 'pass'

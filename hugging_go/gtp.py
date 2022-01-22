@@ -1,3 +1,6 @@
+from .color import Color
+from .vertex import Vertex
+
 import re
 import sys
 
@@ -200,9 +203,9 @@ def _normalize_color(color):
     color = color.lower()
 
     if color == 'black' or color == 'b':
-        return 'b'
+        return Color('b')
     elif color == 'white' or color == 'w':
-        return 'w'
+        return Color('w')
     else:
         raise ValueError()
 
@@ -210,6 +213,6 @@ def _normalize_vertex(vertex):
     vertex = vertex.lower()
 
     if re.match(r'[a-z][0-9]+', vertex):
-        return vertex
+        return Vertex(vertex)
     else:
         raise ValueError()
