@@ -43,11 +43,11 @@ class Gtp:
     [1] https://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html """
 
     KNOWN_COMMANDS = frozenset(
-        ('protocol_version', 'name', 'version', 'known_command', 'list_commands')
+        ('protocol_version', 'name', 'version', 'known_command', 'list_commands', 'quit')
     )
 
     def __init__(self):
-        pass
+        self.is_running = True
 
     def process(self, line):
         id, tokens = self.preprocess(line)
@@ -64,6 +64,8 @@ class Gtp:
             reply = self.known_command(tokens[1:])
         elif tokens[0] == 'list_commands':
             reply = self.list_commands(tokens[1:])
+        elif tokens[0] == 'quit':
+            reply = self.quit(tokens[1:])
         else:
             reply = UnknownCommand()
 
@@ -97,3 +99,8 @@ class Gtp:
 
     def list_commands(self, line):
         return Success('\n'.join(sorted(self.KNOWN_COMMANDS)))
+
+    def quit(self, line):
+        self.is_running = False
+
+        return Success('')
