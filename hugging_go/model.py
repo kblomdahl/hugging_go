@@ -31,7 +31,7 @@ def pretrained_model():
             input_ids=tokens['input_ids'],
             attention_mask=tokens['attention_mask']
         )
-        logits = result.logits[0, :].detach().numpy()
+        logits = result.logits[0, :].softmax(-1).detach().numpy()
         id2label = model.config.id2label
 
         return [[
