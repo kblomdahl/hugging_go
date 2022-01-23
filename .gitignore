@@ -1,4 +1,7 @@
 __pycache__
+build/
+dist/
 model/checkpoint-*
+*.egg-info
 *.sgf
 
