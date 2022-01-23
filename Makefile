@@ -5,3 +5,7 @@ test: build-image $(TESTS)
 
 build-image:
 	docker build .
+
+clean:
+	rm -rf model/checkpoint-*
+
