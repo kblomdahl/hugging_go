@@ -3,19 +3,29 @@ from .vertex import Vertex
 
 from datasets import load_dataset, Features, Value, ClassLabel
 
-def _sgf_to_examples(labels_meta):
+def _sgf_to_examples(labels_meta, tokenizer):
     def _parse(example):
         texts = []
         labels = []
 
         for text in example['text']:
             sequence = parse_sgf_sequence(text)
+
             for i in range(len(sequence) - 1):
-                texts.append(' '.join(sequence[:i]))
+                texts.append(sequence[:i])
                 labels.append(labels_meta.str2int(sequence[i]))
 
+        tokenized_text = tokenizer(
+            texts,
+            is_split_into_words=True,
+            return_token_type_ids=False,
+            truncation=True,
+            max_length=512
+        )
+
         return {
-            'text': texts,
+            'input_ids': tokenized_text['input_ids'],
+            'attention_mask': tokenized_text['attention_mask'],
             'label': labels
         }
 
@@ -26,10 +36,11 @@ def _all_labels():
         yield v.as_gtp()
     yield 'pass'
 
-def load_sgf_files(files):
+def load_sgf_files(files, tokenizer):
     labels = ClassLabel(names=list(_all_labels()))
     features = Features({
-        'text': Value('string'),
+        'input_ids': [Value('int64')],
+        'attention_mask': [Value('int64')],
         'label': labels
     })
     dataset = load_dataset(
@@ -38,5 +49,9 @@ def load_sgf_files(files):
         features=Features({'text': Value('string')})
     )
 
-    dataset = dataset.map(_sgf_to_examples(labels), batched=True, features=features)
-    return dataset
+    return dataset.map(
+        _sgf_to_examples(labels, tokenizer),
+        batched=True,
+        remove_columns=['text'],
+        features=features
+    )
