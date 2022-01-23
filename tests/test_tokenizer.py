@@ -14,6 +14,18 @@ class TestTokenizer(unittest.TestCase):
             ['q16', 'd4', 'q3', 'd17', 'r9', 'o17', 'q14', 'k16', 'd15']
         )
 
+    def test_cls_sep(self):
+        cls_token_id, sep_token_id = self.tokenizer.convert_tokens_to_ids(['[CLS]', '[SEP]'])
+
+        self.assertEqual(
+            self.tokenizer('').input_ids,
+            [cls_token_id, sep_token_id]
+        )
+        self.assertEqual(
+            len(self.tokenizer('q16 d4 q3 d17 r9 o17 q14 k16 d15').input_ids),
+            11
+        )
+
     def test_all_moves(self):
         for x in ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't'):
             for y in range(1, 20):
