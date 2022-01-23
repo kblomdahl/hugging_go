@@ -1,3 +1,5 @@
+from .vertex import Vertex
+
 from tokenizers import AddedToken, Tokenizer, pre_tokenizers, models, trainers, normalizers, processors
 from transformers import PreTrainedTokenizerFast
 
@@ -18,25 +20,12 @@ def pretrained_tokenizer():
         padding_side='right'
     )
 
-_SGF_LETTERS = (
-    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't'
-)
-
-_GTP_LETTERS = (
-    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't'
-)
-
 def _sgf_to_gtp(v):
     if len(v) != 2:
         return 'pass'
     else:
-        x = _SGF_LETTERS.index(v[0])
-        y = _SGF_LETTERS.index(v[1])
-
-        if x > 18 or y > 18: # sometimes `pass` is written as `tt`
-            return 'pass'
-
-        return f'{_GTP_LETTERS[x]}{y + 1}'
+        v = Vertex.from_sgf(v)
+        return v.to_gtp() if v.is_valid() else 'pass'
 
 def _get_sequence_from_line(line):
     sequence = []
@@ -46,7 +35,7 @@ def _get_sequence_from_line(line):
         if vertex is None:
             return None
 
-        sequence.append(f'{vertex}')
+        sequence.append(vertex)
 
     return ' '.join(sequence)
 

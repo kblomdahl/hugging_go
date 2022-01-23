@@ -10,9 +10,9 @@ class TestBoard(unittest.TestCase):
         self.board = Board(komi=self.komi)
 
     def test_double_place(self):
-        self.board.place(Color('b'), Vertex('d4'))
+        self.board.place(Color('b'), Vertex.from_gtp('d4'))
         self.assertFalse(
-            self.board.is_valid(Color('b'), Vertex('d4'))
+            self.board.is_valid(Color('b'), Vertex.from_gtp('d4'))
         )
 
 if __name__ == '__main__':
