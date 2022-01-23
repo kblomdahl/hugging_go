@@ -23,7 +23,7 @@ def beam_search(
                     Candidate(
                         sequence=candidate.sequence + [step['label']],
                         label=candidate.label or step['label'],
-                        score=candidate.score + log(step['score'])
+                        score=candidate.score + log(step['score'] + 1e-8)
                     )
                 )
 
