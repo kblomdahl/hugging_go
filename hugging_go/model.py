@@ -13,7 +13,12 @@ def _bert_config(features):
         vocab_size=362 + 5,
         num_labels=362,
         id2label=id2label,
-        label2id=label2id
+        label2id=label2id,
+
+        # values inspired by TinyBert-4L (https://huggingface.co/huawei-noah/TinyBERT_General_4L_312D/blob/main/config.json)
+        n_layers=4,
+        hidden_dim=1200,
+        dim=312
     )
     return config
 
