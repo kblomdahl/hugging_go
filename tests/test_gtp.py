@@ -12,7 +12,7 @@ class FakeBoardFactory:
 
 class FakeAgent:
     def play(self, board, color, vertex):
-        return True if vertex == Vertex('d4') else False
+        return True if vertex == Vertex.from_gtp('d4') else False
 
     def genmove(self, board, color):
         return 'pass'

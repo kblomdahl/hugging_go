@@ -16,7 +16,7 @@ class Agent:
         candidates = self.pipe(' '.join(board.sequence))
 
         for cand in sorted(candidates[0], key=lambda c: c['score'], reverse=True):
-            vertex = Vertex(cand['label'])
+            vertex = Vertex.from_gtp(cand['label'])
 
             if board.state.is_valid(color, vertex):
                 board.state.place(color, vertex)

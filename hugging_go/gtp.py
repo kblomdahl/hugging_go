@@ -213,6 +213,6 @@ def _normalize_vertex(vertex):
     vertex = vertex.lower()
 
     if re.match(r'[a-z][0-9]+', vertex):
-        return Vertex(vertex)
+        return Vertex.from_gtp(vertex)
     else:
         raise ValueError()
