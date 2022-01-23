@@ -50,10 +50,6 @@ def pretrained_model():
     return _pipeline
 
 def train(dataset, *, tokenizer):
-    def _tokenize_text(examples):
-        return tokenizer(examples['text'], truncation=True, max_length=512)
-
-    dataset = dataset.map(_tokenize_text, remove_columns=['text'], batched=True)
     dataset = dataset.shuffle()
     features = dataset['train'].features
 
