@@ -69,5 +69,6 @@ def _beam_search(pipe, base_seq, depth=6, k=7):
         scr_str = ' '.join([f'{score:4.2f}' for score in cand.scores])
 
         print(f'  {seq_str.ljust(25)} ({scr_str} / ln: {cand.score:.3})', file=sys.stderr)
+    print(file=sys.stderr, flush=True)
 
     return max(candidates, key=lambda c: c.score)
