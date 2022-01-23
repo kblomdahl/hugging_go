@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Build base image
-      run: make build-image
+    - name: Build test base image
+      run: make build-test-image
     - name: Run unit tests
       run: make test
