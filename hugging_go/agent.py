@@ -41,6 +41,9 @@ class Agent:
                 if self._is_sequence_valid(seq + [cand['label']]):
                     yield cand
 
+        if len(board.sequence) >= 512:
+            return 'pass'
+
         best_candidate = _beam_search(_pipe, board.sequence)
         vertex = Vertex.from_gtp(best_candidate.label)
         board.sequence.append(vertex.as_gtp())
@@ -60,7 +63,8 @@ def _beam_search(pipe, base_seq, depth=6, k=7):
         base_seq,
         depth=depth,
         k=k,
-        return_all_candidates=True
+        return_all_candidates=True,
+        time_limit=1.0
     )
 
     print(f'Eval: {_wrap_pipe.count}, Depth: {depth}, Width {k}', file=sys.stderr)

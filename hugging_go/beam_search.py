@@ -1,6 +1,7 @@
 from collections import namedtuple
 from math import log
 from heapq import nlargest
+import time
 
 Candidate = namedtuple('Candidate', ['sequence', 'label', 'scores', 'score'])
 
@@ -9,13 +10,15 @@ def beam_search(
     sequence,
     depth=6,
     k=3,
+    time_limit=None,
     return_all_candidates=False
 ):
+    start_time = time.monotonic()
     candidates = [
         Candidate(sequence=sequence, label=None, scores=[], score=0.0)
     ]
 
-    while depth > 0:
+    while depth > 0 and (time_limit is None or (time.monotonic() - start_time) < time_limit):
         new_candidates = []
 
         for candidate in candidates:
