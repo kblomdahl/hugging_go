@@ -97,7 +97,7 @@ class Board:
 
         # check if the playing in this vertex capture any of the opponents
         # groups, or if it connects to a group with at least two liberties.
-        other = 1 - color
+        other = 3 - color
 
         for n in ns:
             if self.vertices[n] == other and not self._has_two_liberty(n):
@@ -121,7 +121,7 @@ class Board:
         zobrist_hash ^= ZOBRIST[361 * color + index]
 
         # capture any of the opponent groups
-        other = 1 - color
+        other = 3 - color
         ns = [361] * 4
 
         for n in neighbours(index, ns):
@@ -201,7 +201,7 @@ class Board:
         self.zobrist_hash ^= ZOBRIST[361 * color + index]
 
         # capture any of the opponent stones that does not have any liberties
-        other = 1 - color
+        other = 3 - color
         ns = [361] * 4
 
         for n in neighbours(index, ns):
@@ -257,9 +257,9 @@ class Board:
             for x in range(19):
                 index = 19 * y + x
 
-                if self.vertices[index] == 'b':
+                if self.vertices[index] == 1:
                     out += u' ●'
-                elif self.vertices[index] == 'w':
+                elif self.vertices[index] == 2:
                     out += u' ○'
                 else:
                     if mark and index in mark:
