@@ -54,6 +54,7 @@ def train(dataset, *, tokenizer):
         return tokenizer(examples['text'], truncation=True, max_length=512)
 
     dataset = dataset.map(_tokenize_text, remove_columns=['text'], batched=True)
+    dataset = dataset.shuffle()
     features = dataset['train'].features
 
     trainer = Trainer(
