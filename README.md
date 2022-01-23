@@ -4,10 +4,17 @@ A little experiment at using transformers to play go. The basic concept is to fe
 
 ## Run
 
-A GTP interface can be started from the command-line:
+A GTP interface can be started from the command-line, or if you prefer you can build a docker image that runs the bot in an isolated environment:
 
 ```
 python3 -m hugging_go
+```
+
+### Docker
+
+```
+make build-image
+docker run -it `docker build -q .`
 ```
 
 ## Build
