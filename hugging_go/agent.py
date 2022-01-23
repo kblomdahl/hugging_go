@@ -28,7 +28,7 @@ class Agent:
         new_sequence = board.sequence + [vertex.as_gtp()]
 
         if self._is_sequence_valid(new_sequence):
-            board.sequence = new_sequence
+            board.sequence[:] = new_sequence
             return True
         else:
             return False
