@@ -41,28 +41,33 @@ class Agent:
                 if self._is_sequence_valid(seq + [cand['label']]):
                     yield cand
 
-        try:
-            candidates = beam_search(
-                _pipe,
-                board.sequence,
-                depth=6,
-                k=7,
-                return_all_candidates=True
-            )
+        best_candidate = _beam_search(_pipe, board.sequence)
+        vertex = Vertex.from_gtp(best_candidate.label)
+        board.sequence.append(vertex.as_gtp())
 
-            _pretty_print_candidates(candidates, len(board.sequence))
+        return vertex.as_gtp()
 
-            best_candidate = max(candidates, key=lambda c: c.score)
-            vertex = Vertex.from_gtp(best_candidate.label)
-            board.sequence.append(vertex.as_gtp())
+def _beam_search(pipe, base_seq, depth=6, k=7):
+    def _wrap_pipe(seq):
+        _wrap_pipe.count += 1
+        return pipe(seq)
 
-            return vertex.as_gtp()
-        except ValueError as e:
-            traceback.print_exc()
-            return 'pass'
+    _wrap_pipe.count = 0
 
-def _pretty_print_candidates(candidates, base_seq_len):
-        for cand in sorted(candidates, key=lambda c: c.score, reverse=True):
-            seq_str = ' '.join(cand.sequence[base_seq_len:])
+    base_seq_len = len(base_seq)
+    candidates = beam_search(
+        _wrap_pipe,
+        base_seq,
+        depth=depth,
+        k=k,
+        return_all_candidates=True
+    )
 
-            print(f'  {seq_str.ljust(25)} (ln score is {cand.score:.3})', file=sys.stderr)
+    print(f'Eval: {_wrap_pipe.count}, Depth: {depth}, Width {k}', file=sys.stderr)
+    for cand in sorted(candidates, key=lambda c: c.score, reverse=True):
+        seq_str = ' '.join(cand.sequence[base_seq_len:])
+        scr_str = ' '.join([f'{score:4.2f}' for score in cand.scores])
+
+        print(f'  {seq_str.ljust(25)} ({scr_str} / ln: {cand.score:.3})', file=sys.stderr)
+
+    return max(candidates, key=lambda c: c.score)

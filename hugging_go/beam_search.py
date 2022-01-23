@@ -2,7 +2,7 @@ from collections import namedtuple
 from math import log
 from heapq import nlargest
 
-Candidate = namedtuple('Candidate', ['sequence', 'label', 'score'])
+Candidate = namedtuple('Candidate', ['sequence', 'label', 'scores', 'score'])
 
 def beam_search(
     pipe,
@@ -12,7 +12,7 @@ def beam_search(
     return_all_candidates=False
 ):
     candidates = [
-        Candidate(sequence=sequence, label=None, score=0.0)
+        Candidate(sequence=sequence, label=None, scores=[], score=0.0)
     ]
 
     while depth > 0:
@@ -24,6 +24,7 @@ def beam_search(
                     Candidate(
                         sequence=candidate.sequence + [step['label']],
                         label=candidate.label or step['label'],
+                        scores=candidate.scores + [step['score']],
                         score=candidate.score + log(step['score'] + 1e-8)
                     )
                 )
