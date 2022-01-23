@@ -1,4 +1,6 @@
 from .beam_search import beam_search
+from .board import Board
+from .color import Color
 from .vertex import Vertex
 
 import sys
@@ -7,20 +9,36 @@ class Agent:
     def __init__(self, pipe):
         self.pipe = pipe
 
+    def _is_sequence_valid(self, seq):
+        board = Board()
+        color = Color('b')
+
+        for label in seq:
+            if label != 'pass':
+                vertex = Vertex.from_gtp(label)
+                if not board.is_valid(color, vertex):
+                    return False
+                board.place(color, vertex)
+
+            color = color.opposite()
+
+        return True
+
     def play(self, board, color, vertex):
-        if not board.state.is_valid(color, vertex):
-            return False
-        else:
-            board.state.place(color, vertex)
-            board.sequence.append(vertex.as_gtp())
+        new_sequence = board.sequence + [vertex.as_gtp()]
+
+        if self._is_sequence_valid(new_sequence):
+            board.sequence = new_sequence
             return True
+        else:
+            return False
 
     def genmove(self, board, color):
         def _pipe(seq):
             [candidates] = self.pipe(' '.join(seq))
 
             for cand in candidates:
-                if cand['label'] == 'pass' or board.state.is_valid(color, Vertex.from_gtp(cand['label'])):
+                if self._is_sequence_valid(seq + [cand['label']]):
                     yield cand
 
         try:
@@ -36,9 +54,6 @@ class Agent:
 
             best_candidate = max(candidates, key=lambda c: c.score)
             vertex = Vertex.from_gtp(best_candidate.label)
-
-            assert board.state.is_valid(color, vertex)
-            board.state.place(color, vertex)
             board.sequence.append(vertex.as_gtp())
 
             return vertex.as_gtp()
