@@ -10,9 +10,8 @@ import sys
 if len(sys.argv) > 1 and sys.argv[1] == 'train-tokenizer':
     train_tokenizer(files=sys.argv[2:])
 elif len(sys.argv) > 1 and sys.argv[1] == 'train-model':
-    dataset = load_sgf_files(sys.argv[2:])
     train(
-        dataset,
+        load_sgf_files(sys.argv[2:]),
         tokenizer=pretrained_tokenizer()
     )
 else:
