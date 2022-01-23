@@ -1,4 +1,4 @@
-from tokenizers import AddedToken, Tokenizer, pre_tokenizers, models, trainers, normalizers
+from tokenizers import AddedToken, Tokenizer, pre_tokenizers, models, trainers, normalizers, processors
 from transformers import PreTrainedTokenizerFast
 
 import re
@@ -82,5 +82,15 @@ def train_tokenizer(files):
     tokenizer.train_from_iterator(
         get_tokenizer_corpus(files),
         trainer=trainer
+    )
+
+    cls_token_id = tokenizer.token_to_id('[CLS]')
+    sep_token_id = tokenizer.token_to_id('[SEP]')
+    tokenizer.post_processor = processors.TemplateProcessing(
+        single='[CLS] $0 [SEP]',
+        special_tokens=[
+            ('[CLS]', cls_token_id),
+            ('[SEP]', sep_token_id),
+        ]
     )
     tokenizer.save(_TOKENIZER_FILE_PATH)
