@@ -1,9 +1,8 @@
 from .vertex import Vertex
+from .sgf import parse_sgf_sequence
 
 from tokenizers import AddedToken, Tokenizer, pre_tokenizers, models, trainers, normalizers, processors
 from transformers import PreTrainedTokenizerFast
-
-import re
 
 _TOKENIZER_FILE_PATH = 'model/tokenizer.json'
 
@@ -20,37 +19,16 @@ def pretrained_tokenizer():
         padding_side='right'
     )
 
-def _sgf_to_gtp(v):
-    if len(v) != 2:
-        return 'pass'
-    else:
-        v = Vertex.from_sgf(v)
-        return v.to_gtp() if v.is_valid() else 'pass'
-
-def _get_sequence_from_line(line):
-    sequence = []
-
-    for vertex in re.findall(r'[BW]\[([a-z]{0,2})\]', line):
-        vertex = _sgf_to_gtp(vertex)
-        if vertex is None:
-            return None
-
-        sequence.append(vertex)
-
-    return ' '.join(sequence)
-
 def get_tokenizer_corpus(files):
     for file in files:
         with open(file, 'r') as f:
             for line in f:
-                sequence = _get_sequence_from_line(line)
-                if sequence:
-                    yield sequence
+                sequence = parse_sgf_sequence(line)
+                yield ' '.join(sequence)
 
 def _all_tokens():
-    for x in _GTP_LETTERS:
-        for y in range(1, 20):
-            yield AddedToken(f'{x}{y}', single_word=True)
+    for v in Vertex.all():
+        yield AddedToken(v.as_gtp(), single_word=True)
 
     yield AddedToken('pass', single_word=True)
 

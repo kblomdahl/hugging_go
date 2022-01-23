@@ -18,6 +18,11 @@ class Vertex:
                 y=_SGF_LETTERS.index(s[1])
             )
 
+    def all():
+        for x in range(0, 19):
+            for y in range(0, 19):
+                yield Vertex(x=x, y=y)
+
     @property
     def x(self):
         return self._x
@@ -36,7 +41,10 @@ class Vertex:
         return f'{_SGF_LETTERS[self.x]}{_SGF_LETTERS[self.y]}'
 
     def __eq__(self, other):
-        return self.x == other.y and self.y == other.y
+        return self.x == other.x and self.y == other.y
+
+    def __str__(self):
+        return f'<x={self.x}, y={self.y}>'
 
 _GTP_LETTERS = (
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'l', 'm',
