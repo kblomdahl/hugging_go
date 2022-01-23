@@ -8,7 +8,8 @@ def beam_search(
     pipe,
     sequence,
     depth=6,
-    k=3
+    k=3,
+    return_all_candidates=False
 ):
     candidates = [
         Candidate(sequence=sequence, label=None, score=0.0)
@@ -34,4 +35,7 @@ def beam_search(
             key=lambda c: c.score
         )
 
-    return max(candidates, key=lambda c: c.score)
+    if return_all_candidates:
+        return candidates
+    else:
+        return max(candidates, key=lambda c: c.score)
