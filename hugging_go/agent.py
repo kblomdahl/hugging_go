@@ -1,3 +1,4 @@
+from .beam_search import beam_search
 from .vertex import Vertex
 
 class Agent:
@@ -13,14 +14,28 @@ class Agent:
             return True
 
     def genmove(self, board, color):
-        candidates = self.pipe(' '.join(board.sequence))
+        def _pipe(seq):
+            [candidates] = self.pipe(' '.join(seq))
 
-        for cand in sorted(candidates[0], key=lambda c: c['score'], reverse=True):
-            vertex = Vertex.from_gtp(cand['label'])
+            for cand in candidates:
+                if cand['label'] == 'pass' or board.state.is_valid(color, Vertex.from_gtp(cand['label'])):
+                    yield cand
 
-            if board.state.is_valid(color, vertex):
-                board.state.place(color, vertex)
-                board.sequence.append(vertex.as_gtp())
-                return vertex.as_gtp()
+        try:
+            best_candidate = beam_search(
+                _pipe,
+                board.sequence,
+                depth=6,
+                k=7
+            )
 
-        return 'resign'
+            vertex = Vertex.from_gtp(best_candidate.label)
+
+            assert board.state.is_valid(color, vertex)
+            board.state.place(color, vertex)
+            board.sequence.append(vertex.as_gtp())
+
+            return vertex.as_gtp()
+        except ValueError as e:
+            traceback.print_exc()
+            return 'pass'
