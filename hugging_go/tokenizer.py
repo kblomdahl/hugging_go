@@ -29,7 +29,6 @@ def get_tokenizer_corpus(files):
 def _all_tokens():
     for v in Vertex.all():
         yield AddedToken(v.as_gtp(), single_word=True)
-
     yield AddedToken('pass', single_word=True)
 
 def train_tokenizer(files):
