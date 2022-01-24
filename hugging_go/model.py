@@ -58,7 +58,7 @@ def train(dataset, *, tokenizer):
         args=TrainingArguments(
             output_dir=_MODEL_PATH,
             overwrite_output_dir=True,
-            per_device_train_batch_size=96,
+            per_device_train_batch_size=32,
             fp16=True,
         ),
         train_dataset=dataset['train'],
