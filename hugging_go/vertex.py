@@ -10,7 +10,9 @@ class Vertex:
         )
 
     def from_sgf(s):
-        if len(s) != 2:
+        if len(s) == 0:
+            return Vertex(x=19, y=19)
+        elif len(s) != 2:
             raise ValueError()
         else:
             return Vertex(

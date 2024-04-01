@@ -1,4 +1,4 @@
-FROM huggingface/transformers-pytorch-cpu
+FROM python:3.12-slim
 COPY requirements.txt /tmp/requirements.txt
 COPY dist/hugging_go-0.0.0-py3-none-any.whl /tmp/hugging_go-0.0.0-py3-none-any.whl
 COPY model/ /workspace/model

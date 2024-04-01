@@ -9,6 +9,7 @@ def parse_sgf_sequence(sgf):
             for vertex in [
                 Vertex.from_sgf(vertex)
                 for vertex in re.findall(r'[BW]\[([a-z]{0,2})\]', sgf)
+                if vertex
             ]
         ]
     except ValueError:
