@@ -1,3 +1,6 @@
 datasets
+fire
 torch
 transformers
+accelerate
+nvidia-ml-py3

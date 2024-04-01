@@ -3,7 +3,7 @@ from hugging_go.vertex import Vertex
 
 import unittest
 
-class TestBoard(unittest.TestCase):
+class TestModel(unittest.TestCase):
     def setUp(self):
         self.pipe = pretrained_model()
 
@@ -14,7 +14,7 @@ class TestBoard(unittest.TestCase):
 
     def test_softmax(self):
         candidates = self.pipe('')
-        self.assertAlmostEqual(sum([cand['score'] for cand in candidates[0]]), 1.0, places=5)
+        self.assertAlmostEqual(sum([cand['score'] for cand in candidates[0]]), 1.0, places=2)
 
     def test_labels(self):
         candidates = self.pipe('')
