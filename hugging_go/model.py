@@ -6,8 +6,8 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 _MODEL_PATH = 'model/'
 
 
-def _model_config(features):
-    config = MistralConfig(
+def _model_config():
+    return MistralConfig(
         vocab_size=362 + 5,
         num_labels=362,
 
@@ -19,10 +19,9 @@ def _model_config(features):
         num_attention_heads=8,
         num_key_value_heads=2,
     )
-    return config
 
-def _model(features):
-    return MistralForCausalLM(_model_config(features))
+def _model():
+    return MistralForCausalLM(_model_config())
 
 def pretrained_model():
     latest_checkpoint = get_last_checkpoint(_MODEL_PATH)
@@ -38,23 +37,23 @@ def pretrained_model():
         result = model.forward(input_ids=tokens['input_ids'])
         logits = result.logits[0, -1, :].softmax(-1).detach().numpy()
         non_special_tokens = tokenizer.convert_ids_to_tokens(range(logits.size), skip_special_tokens=True)
-
-        return [[
+        candidates = [
             {
                 'label': token,
                 'score': logits[tokenizer.convert_tokens_to_ids(token)]
             }
             for token in non_special_tokens
-        ]]
+        ]
+
+        return [candidates]
 
     return _pipeline
 
 def train(dataset, *, tokenizer):
     dataset = dataset.shuffle()
-    features = dataset['train'].features
 
     trainer = Trainer(
-        model=_model(features),
+        model=_model(),
         args=TrainingArguments(
             output_dir=_MODEL_PATH,
             overwrite_output_dir=True,
