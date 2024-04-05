@@ -11,11 +11,11 @@ class Agent:
 
     def _is_sequence_valid(self, seq):
         board = Board()
-        color = Color('b')
+        color = Color('B')
 
         for label in seq:
-            if label != 'pass':
-                vertex = Vertex.from_gtp(label)
+            if label not in ['Bpass', 'Wpass']:
+                vertex = Vertex.from_gtp(label[1:])
                 if not board.is_valid(color, vertex):
                     return False
                 board.place(color, vertex)
@@ -25,7 +25,7 @@ class Agent:
         return True
 
     def play(self, board, color, vertex):
-        new_sequence = board.sequence + [vertex.as_gtp()]
+        new_sequence = board.sequence + [str(color) + vertex.as_gtp()]
 
         if self._is_sequence_valid(new_sequence):
             board.sequence[:] = new_sequence
@@ -34,26 +34,25 @@ class Agent:
             return False
 
     def genmove(self, board, color):
-        def _pipe(seq):
-            [candidates] = self.pipe(' '.join(seq))
+        def _pipe(seq, next_color):
+            [candidates] = self.pipe(' '.join(seq), next_color)
 
             for cand in candidates:
                 if self._is_sequence_valid(seq + [cand['label']]):
                     yield cand
 
         if len(board.sequence) >= 512:
-            return 'pass'
+            return f'{str(color)}pass'
 
-        best_candidate = _beam_search(_pipe, board.sequence)
-        vertex = Vertex.from_gtp(best_candidate.label)
-        board.sequence.append(vertex.as_gtp())
+        best_candidate = _beam_search(_pipe, board.sequence, color)
+        board.sequence.append(best_candidate.label)
 
-        return vertex.as_gtp()
+        return best_candidate.label[1:]
 
-def _beam_search(pipe, base_seq, depth=6, k=7):
-    def _wrap_pipe(seq):
+def _beam_search(pipe, base_seq, next_color, depth=6, k=7):
+    def _wrap_pipe(seq, color):
         _wrap_pipe.count += 1
-        return pipe(seq)
+        return pipe(seq, color)
 
     _wrap_pipe.count = 0
 
@@ -61,6 +60,7 @@ def _beam_search(pipe, base_seq, depth=6, k=7):
     candidates = beam_search(
         _wrap_pipe,
         base_seq,
+        next_color,
         depth=depth,
         k=k,
         return_all_candidates=True,

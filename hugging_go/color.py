@@ -4,15 +4,18 @@ class Color:
         self.s = s
 
     def opposite(self):
-        if self.s == 'b':
-            return Color('w')
+        if self.s == 'B':
+            return Color('W')
         else:
-            return Color('b')
+            return Color('B')
+
+    def __str__(self):
+        return self.s
 
     def __int__(self):
-        if self.s == 'b':
+        if self.s == 'B':
             return 1
-        elif self.s == 'w':
+        elif self.s == 'W':
             return 2
         else:
             raise ValueError()
