@@ -1,15 +1,17 @@
 from hugging_go.beam_search import beam_search
+from hugging_go.color import Color
 
 import unittest
 
 class TestBeamSearch(unittest.TestCase):
     def test_greedy(self):
         best_candidate = beam_search(
-            lambda _: [
+            lambda _seq, _color: [
                 { 'label': 'a', 'score': 0.9 },
                 { 'label': 'b', 'score': 0.1 }
             ],
             [],
+            Color('B'),
             k=2,
             depth=3
         )
@@ -18,7 +20,7 @@ class TestBeamSearch(unittest.TestCase):
         self.assertEqual(best_candidate.sequence, ['a', 'a', 'a'])
 
     def test_non_greedy(self):
-        def _pipe(seq):
+        def _pipe(seq, _):
             if seq == []:
                 return [
                     { 'label': 'a', 'score': 0.1 },
@@ -38,6 +40,7 @@ class TestBeamSearch(unittest.TestCase):
         best_candidate = beam_search(
             _pipe,
             [],
+            Color('B'),
             k=3,
             depth=2
         )

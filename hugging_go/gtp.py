@@ -2,7 +2,6 @@ from .color import Color
 from .vertex import Vertex
 
 import re
-import sys
 
 class Error:
     def __init__(self, message):
@@ -203,9 +202,9 @@ def _normalize_color(color):
     color = color.lower()
 
     if color == 'black' or color == 'b':
-        return Color('b')
+        return Color('B')
     elif color == 'white' or color == 'w':
-        return Color('w')
+        return Color('W')
     else:
         raise ValueError()
 

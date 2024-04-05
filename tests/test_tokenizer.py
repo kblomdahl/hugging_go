@@ -7,11 +7,11 @@ class TestTokenizer(unittest.TestCase):
         self.tokenizer = pretrained_tokenizer()
 
     def test_tokenize(self):
-        sequence = 'q16 d4 q3 d17 r9 o17 q14 k16 d15'
+        sequence = 'Wq16 Bd4 Wq3 Bd17 Wr9 Bo17 Wq14 Bk16 Wd15'
 
         self.assertEqual(
             self.tokenizer.tokenize(sequence),
-            ['q16', 'd4', 'q3', 'd17', 'r9', 'o17', 'q14', 'k16', 'd15']
+            ['Wq16', 'Bd4', 'Wq3', 'Bd17', 'Wr9', 'Bo17', 'Wq14', 'Bk16', 'Wd15']
         )
 
     def test_cls_sep(self):
@@ -22,21 +22,22 @@ class TestTokenizer(unittest.TestCase):
             [cls_token_id, sep_token_id]
         )
         self.assertEqual(
-            len(self.tokenizer('q16 d4 q3 d17 r9 o17 q14 k16 d15').input_ids),
+            len(self.tokenizer('Bq16 Wd4 Bq3 Wd17 Br9 Wo17 Bq14 Wk16 Bd15').input_ids),
             11
         )
 
     def test_all_moves(self):
-        for x in ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't'):
-            for y in range(1, 20):
-                ids = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(f'{x}{y}'))
+        for color in ('B', 'W'):
+            for x in ('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't'):
+                for y in range(1, 20):
+                    ids = self.tokenizer.convert_tokens_to_ids(self.tokenizer.tokenize(f'{color}{x}{y}'))
 
-                self.assertNotEqual(
-                    ids,
-                    [0], # `0` is the `[UNK]` token
-                    f'missing token for `{x}{y}`'
-                )
-                self.assertEqual(len(ids), 1, f'is split into more than one token `{x}{y}`')
+                    self.assertNotEqual(
+                        ids,
+                        [0], # `0` is the `[UNK]` token
+                        f'missing token for `{color}{x}{y}`'
+                    )
+                    self.assertEqual(len(ids), 1, f'is split into more than one token `{color}{x}{y}`')
 
 if __name__ == '__main__':
     unittest.main()
