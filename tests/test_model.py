@@ -9,24 +9,26 @@ class TestModel(unittest.TestCase):
         self.pipe = pretrained_model()
 
     def test_shape(self):
-        candidates = self.pipe('', Color('B'))
-        self.assertEqual(len(candidates), 1)
-        self.assertEqual(len(candidates[0]), 362)
+        [candidates, winner] = self.pipe('', Color('B'))
+        self.assertEqual(len(candidates), 362)
+        self.assertTrue(isinstance(winner, float))
 
     def test_softmax(self):
-        candidates = self.pipe('', Color('B'))
-        self.assertAlmostEqual(sum([cand['score'] for cand in candidates[0]]), 1.0, places=5)
+        [candidates, winner] = self.pipe('', Color('B'))
+        self.assertAlmostEqual(sum([cand['score'] for cand in candidates]), 1.0, places=5)
+        self.assertGreaterEqual(winner, -1.0)
+        self.assertLessEqual(winner, 1.0)
 
     def test_black_labels(self):
-        candidates = self.pipe('', Color('B'))
-        labels = set([cand['label'] for cand in candidates[0]])
+        [candidates, _] = self.pipe('', Color('B'))
+        labels = set([cand['label'] for cand in candidates])
 
         for v in Vertex.all():
             self.assertIn('B' + v.as_gtp(), labels)
 
     def test_white_labels(self):
-        candidates = self.pipe('Bd4', Color('W'))
-        labels = set([cand['label'] for cand in candidates[0]])
+        [candidates, _] = self.pipe('Bd4', Color('W'))
+        labels = set([cand['label'] for cand in candidates])
 
         for v in Vertex.all():
             self.assertIn('W' + v.as_gtp(), labels)

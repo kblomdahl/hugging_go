@@ -35,7 +35,7 @@ class Agent:
 
     def genmove(self, board, color):
         def _pipe(seq, next_color):
-            [candidates] = self.pipe(' '.join(seq), next_color)
+            [candidates, _] = self.pipe(' '.join(seq), next_color)
 
             for cand in candidates:
                 if self._is_sequence_valid(seq + [cand['label']]):
