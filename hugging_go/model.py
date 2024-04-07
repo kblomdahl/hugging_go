@@ -226,13 +226,17 @@ def pretrained_model():
     model = MistralForCausalLMAndSequenceClassification.from_pretrained(latest_checkpoint)
     tokenizer = AutoTokenizer.from_pretrained(latest_checkpoint)
 
-    def _pipeline(text, next_color):
+    def _pipeline(text, next_color, past_key_values=None):
         tokens = tokenizer(
             f'{tokenizer.bos_token} {text}',
             return_tensors='pt',
             add_special_tokens=False
         )
-        result = model.forward(input_ids=tokens['input_ids'])
+        result = model.forward(
+            input_ids=tokens['input_ids'],
+            use_cache=past_key_values is not None,
+            past_key_values=past_key_values
+        )
         class_logits = result.class_logits[0, :].detach().numpy()
         lm_logits = result.lm_logits[0, -1, :].detach().numpy()
         non_special_tokens = {
@@ -251,7 +255,7 @@ def pretrained_model():
         else:
             winner = -1.0 * classes[0] + 1.0 * classes[1]
 
-        return [candidates, winner]
+        return [candidates, winner, result.past_key_values]
 
     return _pipeline
 
