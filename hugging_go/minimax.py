@@ -1,3 +1,11 @@
+""" Minimax algorithm with tail-free sampling and α-β pruning.
+
+An implementation of minimax with a few tweaks to make it more sample efficient:
+  - tail-free sampling (tfs) to reduce the number of nodes visited.
+  - α-β pruning to reduce the number of nodes visited.
+    - ordering of the nodes by score to increase the likelihood of pruning.
+"""
+
 import time
 import numpy as np
 from collections import namedtuple
@@ -21,7 +29,9 @@ def _minimax(
     pipe,
     sequence,
     next_player,
-    depth=2,
+    alpha,
+    beta,
+    depth,
     tfs_z=0.95,
     return_all_candidates=False,
     past_key_values=None
@@ -32,26 +42,35 @@ def _minimax(
 
     all_candidates = []
     for candidate in tail_free_sampling(candidates, z=tfs_z):
-        new_sequence = sequence + [candidate['label']]
         new_candidate = _minimax(
             pipe=pipe,
-            sequence=new_sequence,
+            sequence=sequence + [candidate['label']],
             next_player=next_player.opposite(),
+            alpha=-beta,
+            beta=-alpha,
             depth=depth - 1,
             tfs_z=tfs_z,
             return_all_candidates=False,
             past_key_values=next_past_key_values
         )
 
-        all_candidates.append(Candidate(
-            label=candidate['label'],
-            score=candidate['score'],
-            value=-new_candidate.value,
-            child=new_candidate
-        ))
+        if new_candidate:
+            if new_candidate.value > beta:
+                break
+            if new_candidate.value > alpha:
+                alpha = new_candidate.value
+
+            all_candidates.append(Candidate(
+                label=candidate['label'],
+                score=candidate['score'],
+                value=-new_candidate.value,
+                child=new_candidate
+            ))
 
     if return_all_candidates:
         return all_candidates
+    elif all_candidates == []:
+        return None
     else:
         return min(all_candidates, key=lambda cand: cand.value)
 
@@ -65,14 +84,14 @@ def minimax(
     return_all_candidates=False
 ):
     if time_limit is None:
-        return [_minimax(pipe, sequence, next_player, depth, tfs_z, return_all_candidates), depth]
+        return [_minimax(pipe, sequence, next_player, -1.0, 1.0, depth, tfs_z, return_all_candidates), depth]
     else:
         start_time = time.monotonic()
         current_depth = 1
         so_far = None
 
         while so_far is None or (current_depth <= depth and (time.monotonic() - start_time) < time_limit):
-            so_far = _minimax(pipe, sequence, next_player, current_depth, tfs_z, return_all_candidates)
+            so_far = _minimax(pipe, sequence, next_player, -1.0, 1.0, current_depth, tfs_z, return_all_candidates)
             current_depth += 1
 
         return [so_far, current_depth - 1]

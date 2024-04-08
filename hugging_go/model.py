@@ -125,7 +125,7 @@ class MistralForCausalLMAndSequenceClassification(MistralPreTrainedModel):
             class_loss = loss_fct(pooled_logits.view(-1, self.num_labels), class_labels.view(-1))
 
         return CasualLMAndSequenceClassifierOutputWithPast(
-            loss=lm_loss + class_loss,
+            loss=lm_loss + 2.0 * class_loss,
             lm_logits=lm_logits,
             class_logits=pooled_logits,
             past_key_values=transformer_outputs.past_key_values,
@@ -206,8 +206,8 @@ def _model_config(tokenizer):
         pad_token_id=tokenizer.convert_tokens_to_ids('[PAD]'),
 
         # Numbers just made up by me ¯\_(ツ)_/¯
-        hidden_size=724,
-        intermediate_size=2534,
+        hidden_size=736,
+        intermediate_size=2544,
 
         num_hidden_layers=8,
         num_attention_heads=8,
@@ -268,7 +268,7 @@ def train(dataset, *, tokenizer):
             output_dir=_MODEL_PATH,
             overwrite_output_dir=True,
             save_total_limit=5,
-            per_device_train_batch_size=128,
+            per_device_train_batch_size=64,
             bf16=True,
         ),
         train_dataset=dataset['train'],

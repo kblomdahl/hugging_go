@@ -72,7 +72,7 @@ def _minimax(pipe, base_seq, next_color, time_limit=3.0, depth=6, tfs_z=0.95):
 
         while curr is not None:
             if curr.child is not None:
-                seq_list.append(curr.label)
+                seq_list.append(curr.label[1:])
                 scr_list.append(curr.score)
             curr = curr.child
 
