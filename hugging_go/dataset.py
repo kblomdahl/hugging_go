@@ -42,7 +42,7 @@ def _sgf_to_examples(tokenizer):
     return _parse
 
 def _only_with_winner(example):
-    return example["winner"] not in ['B', 'W']
+    return example["winner"] in ['B', 'W']
 
 def load_sgf_files(files, tokenizer):
     dataset = load_dataset('text', data_files=files)
