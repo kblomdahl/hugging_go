@@ -222,9 +222,8 @@ def _softmax(x):
     return np.exp(delta) / np.exp(delta).sum()
 
 def pretrained_model():
-    latest_checkpoint = get_last_checkpoint(_MODEL_PATH)
-    model = MistralForCausalLMAndSequenceClassification.from_pretrained(latest_checkpoint)
-    tokenizer = AutoTokenizer.from_pretrained(latest_checkpoint)
+    model = MistralForCausalLMAndSequenceClassification.from_pretrained('kblomdahl/hugging_go')
+    tokenizer = AutoTokenizer.from_pretrained('kblomdahl/hugging_go')
 
     def _pipeline(text, next_color, past_key_values=None):
         tokens = tokenizer(
