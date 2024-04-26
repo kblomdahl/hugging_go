@@ -231,11 +231,13 @@ def pretrained_model():
             return_tensors='pt',
             add_special_tokens=False
         )
-        result = model.forward(
+
+        inputs = model.prepare_inputs_for_generation(
             input_ids=tokens['input_ids'],
             use_cache=past_key_values is not None,
             past_key_values=past_key_values
         )
+        result = model.forward(**inputs)
         class_logits = result.class_logits[0, :].detach().numpy()
         lm_logits = result.lm_logits[0, -1, :].detach().numpy()
         non_special_tokens = {
